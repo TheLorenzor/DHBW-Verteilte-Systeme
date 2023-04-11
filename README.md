@@ -27,8 +27,5 @@ Unterschiede:
 | MQTT v.3 | MQTT v.5 | 
 | --- | --- |
 | Standartisiert in ISO/IEC 20922:2016 / Erster OASIS Standard | keine ISO Standardisierung |
-|  |verbessesertes Error Handling|
-| | Leistungssteigerung und Unterstützung für kleine Clients |
-| | Erweiterbarkeit von Nutzereigenschaften |
-| | Formalisierung bekannter Patterns wie Request Response und Capability Discovery |
 | unterstützt Backward Kompatibilität | keine Backward Kompatibilität |
+
