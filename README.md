@@ -24,8 +24,50 @@ gelöscht.
 
 Unterschiede:
 
-| MQTT v.3 | MQTT v.5 | 
-| --- | --- |
-| Standartisiert in ISO/IEC 20922:2016 / Erster OASIS Standard | keine ISO Standardisierung |
-| unterstützt Backward Kompatibilität | keine Backward Kompatibilität |
+| MQTT v.3                                                     | MQTT v.5                                            | 
+|--------------------------------------------------------------|-----------------------------------------------------|
+| Standartisiert in ISO/IEC 20922:2016 / Erster OASIS Standard | keine ISO Standardisierung                          |
+| unterstützt Backward Kompatibilität                          | keine Backward Kompatibilität                       |
+| limitierte Funktionalität                                    | viele neue Funktionen                               |
+| Disconnect darf nur von Clioentseite aus kommen              | Disconnect darf auch von Serverseite gegeben werden |
+| Server hat keine Informationen darüber was schief lief       | Server gibt Errorcodes zurück + ACK Nachrichten     |
+
+## b)
+
+**Wie können Sie alle Topics abonnieren, auch ohne diese alle im Vorraus zu kennen?**
+
+* Mit `-t /#` werden alle Topics abonniert --> unser Beispiel: `mosquitto_sub.exe -v -h 10.50.12.150 -t /#`
+
+**Welche Topics und Werte können Sie sehen?**
+
+* `/weather/mergentheim` {"tempCurrent":.670013,"tempMax":11.119995,"tempMin":8.75,"comment":"Publ.Id 261118","timeStamp":"2023-04-11T08:37:06.063+00:00","city":"Bad Mergentheim","cityId":2953402}
+* `/weather/stuttgart` {"tempCurrent":9.779999,"tempMax":11.029999,"tempMin":8.670013,"comment":"Publ.Id 261118","timeStamp":"2023-04-11T08:36:06.055+00:00","city":"Stuttgart","cityId":2825297} 
+* `/weather/mosbach` {"tempCurrent":10.959991,"tempMax":11.959991,"tempMin":9.480011,"comment":"Publ.Id 261118","timeStamp":"2023-04-11T08:36:36.029+00:00","city":"Mosbach","cityId":2869120} 
+* `/siemens/1200CPU/OPC/iRcv1` +13333 
+* `/siemens/1200CPU/OPC/sRcv` Hallo ET20B ;-))
+* `/siemens/1200CPU/Time` S7-1200 Time: +9h +39min +16sec 
+* `/siemens/1200CPU/Poti` +16996 
+* `/siemens/1200CPU/IO` +0 
+
+**Wie können Sie ein bestimmtes Topic abonnieren, z.B. das Wetter für Mosbach?**
+
+1. In den Ordner wechseln wo Mosquito installiert ist
+2. Mit der Kommandozeil im Ordner öffnen
+3. `mosquitto_sub.exe -h 10.50.12.150 -v -t /weather/mosbach` in die Konsole eingeben
+
+**In welchem Datenformat werden die Wetterdaten bereitgestellt?**
+* JSON Format:
+
+| JSON-Key    | Type     |
+|-------------|----------|
+| tempCurrent | number   |
+| tempMax     | number   |
+| tempMin     | number   |
+| comment     | string   |
+| timeStamp   | DateTime |
+| city        | string   |
+| cityId      | number   |
+
+## c)
+
 
