@@ -46,14 +46,17 @@ Unterschiede:
 
 **Welche Topics und Werte können Sie sehen?**
 
-* `/weather/mergentheim` {"tempCurrent":.670013,"tempMax":11.119995,"tempMin":8.75,"comment":"Publ.Id 261118","timeStamp":"2023-04-11T08:37:06.063+00:00","city":"Bad Mergentheim","cityId":2953402}
-* `/weather/stuttgart` {"tempCurrent":9.779999,"tempMax":11.029999,"tempMin":8.670013,"comment":"Publ.Id 261118","timeStamp":"2023-04-11T08:36:06.055+00:00","city":"Stuttgart","cityId":2825297} 
-* `/weather/mosbach` {"tempCurrent":10.959991,"tempMax":11.959991,"tempMin":9.480011,"comment":"Publ.Id 261118","timeStamp":"2023-04-11T08:36:36.029+00:00","city":"Mosbach","cityId":2869120} 
-* `/siemens/1200CPU/OPC/iRcv1` +13333 
+* `/weather/mergentheim` {"tempCurrent":.670013,"tempMax":11.119995,"tempMin":8.75,"comment":"Publ.Id 261118","
+  timeStamp":"2023-04-11T08:37:06.063+00:00","city":"Bad Mergentheim","cityId":2953402}
+* `/weather/stuttgart` {"tempCurrent":9.779999,"tempMax":11.029999,"tempMin":8.670013,"comment":"Publ.Id 261118","
+  timeStamp":"2023-04-11T08:36:06.055+00:00","city":"Stuttgart","cityId":2825297}
+* `/weather/mosbach` {"tempCurrent":10.959991,"tempMax":11.959991,"tempMin":9.480011,"comment":"Publ.Id 261118","
+  timeStamp":"2023-04-11T08:36:36.029+00:00","city":"Mosbach","cityId":2869120}
+* `/siemens/1200CPU/OPC/iRcv1` +13333
 * `/siemens/1200CPU/OPC/sRcv` Hallo ET20B ;-))
-* `/siemens/1200CPU/Time` S7-1200 Time: +9h +39min +16sec 
-* `/siemens/1200CPU/Poti` +16996 
-* `/siemens/1200CPU/IO` +0 
+* `/siemens/1200CPU/Time` S7-1200 Time: +9h +39min +16sec
+* `/siemens/1200CPU/Poti` +16996
+* `/siemens/1200CPU/IO` +0
 
 **Wie können Sie ein bestimmtes Topic abonnieren, z.B. das Wetter für Mosbach?**
 
@@ -62,6 +65,7 @@ Unterschiede:
 3. `mosquitto_sub.exe -h 10.50.12.150 -v -t /weather/mosbach` in die Konsole eingeben
 
 **In welchem Datenformat werden die Wetterdaten bereitgestellt?**
+
 * JSON Format:
 
 | JSON-Key    | Type     |
@@ -74,6 +78,22 @@ Unterschiede:
 | city        | string   |
 | cityId      | number   |
 
-## c)
+# Aufgabe 2
 
+## a)
+
+**Was sind Gemeinsamkeiten und Unterschiede zwischen Kafka und MQTT-Brokern**
+
+| Gemeinsamkeiten                          | Unterschiede                                                                          |
+|------------------------------------------|---------------------------------------------------------------------------------------|
+| haben beide ein Publish subscribe Modell | MQTT ist für generelle Daten, Kafka ist fürs rum schaufeln großer Daten               |
+| Sind eine Client-Server Architekture     | Kann zusätzlich daten abspeichern auf platte und processen --> MQTT leitet nur weiter |
+| kann zu mehreren Topics subscriben       | unterschiedliche Familien von Brokern                                                 | 
+
+**Für welche Szenarien ist Kafka besser geeignet**
+- für massive Datentransfer
+- Batch Processing
+- Abspeichern vieler Daten
+
+**Man findet bei Vergleichen öfters die Aussage, Kafka würde das Modell “Dumb Broker / Smart Consumer” implementieren, während bei MQTT “Smart broker / Dumb Consumer” gilt. Was ist damit gemeint? Was muss ein Kafka-Consumer beachten?**
 
