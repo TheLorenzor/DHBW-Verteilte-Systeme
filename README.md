@@ -114,3 +114,9 @@ gleichzeitig eine Partition schicken und diese beim Consumer alle auf einmal ank
 - hoher Message Throuput
 - durch Partition redundanz gegeben -> mehr als eine Partitino wird vorgehalten
 
+## c
+**Wozu dienen Key und Value beim Versenden von Kafka-Messages?**
+- nutzen für Partitionen 
+- keys genutzt um zu entscheiden innerhalb des Logs welche Partition wohin angefügt wurde
+- Keys are used to determine the partition within a log to which a message get's appended to. While the value is the actual payload of the message
+- Erhalt Nachrichtenreihenfolge
