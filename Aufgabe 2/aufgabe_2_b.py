@@ -3,7 +3,7 @@ from confluent_kafka import Consumer
 config = {
     'bootstrap.servers': '10.50.15.52:9092',
     'auto.offset.reset': 'latest',
-    'group.id': 'the mighty avengers',
+    'group.id': 'the_mighty_avengers',
 
 }
 
