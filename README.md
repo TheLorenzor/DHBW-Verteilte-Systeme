@@ -88,7 +88,9 @@ Unterschiede:
 |------------------------------------------|---------------------------------------------------------------------------------------|
 | haben beide ein Publish subscribe Modell | MQTT ist für generelle Daten, Kafka ist fürs rum schaufeln großer Daten               |
 | Sind eine Client-Server Architekture     | Kann zusätzlich daten abspeichern auf platte und processen --> MQTT leitet nur weiter |
-| kann zu mehreren Topics subscriben       | unterschiedliche Familien von Brokern                                                 | 
+| kann zu mehreren Topics subscriben       | unterschiedliche Familien von Brokern                                                 |
+ | -                                        | MQTT ist Protokoll, Kafka ist Serverimplementierung                                   |
+| -                                        | Kafka ist für High Volume low Value Daten zuständig                                   |
 
 **Für welche Szenarien ist Kafka besser geeignet**
 - für massive Datentransfer
@@ -96,4 +98,19 @@ Unterschiede:
 - Abspeichern vieler Daten
 
 **Man findet bei Vergleichen öfters die Aussage, Kafka würde das Modell “Dumb Broker / Smart Consumer” implementieren, während bei MQTT “Smart broker / Dumb Consumer” gilt. Was ist damit gemeint? Was muss ein Kafka-Consumer beachten?**
+- im gegensatz zu RAbbitMQ registriert Kafka nicht welche Nachrichten durch Clients gelesen wurden
+- Kafka hält nachrichten für gewisse Länge vor und löscht diese nicht
+
+Kafka Consumer muss beachten:
+- regelmäßig abfragen
+- Consumer muss daten lesen 
+
+**Was sind Partitionen? Für was kann man sie neben Load-Balancing noch verwenden?**
+-  Ein Topic ist unterteilt in viele partitionen
+- Eine Partition ist das kleinste Set an Daten die in einem Topic vorhanden sind
+- Für Load balancing ist gut -> kann die Topics horizontal skalieren indem verschiedene Broker
+gleichzeitig eine Partition schicken und diese beim Consumer alle auf einmal ankommen
+- ein einzelnes Topic can dadurch von mehreren Consumern gelesen werden
+- hoher Message Throuput
+- durch Partition redundanz gegeben -> mehr als eine Partitino wird vorgehalten
 
