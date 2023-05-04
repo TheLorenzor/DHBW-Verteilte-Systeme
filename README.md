@@ -120,3 +120,14 @@ gleichzeitig eine Partition schicken und diese beim Consumer alle auf einmal ank
 - keys genutzt um zu entscheiden innerhalb des Logs welche Partition wohin angefügt wurde
 - Keys are used to determine the partition within a log to which a message get's appended to. While the value is the actual payload of the message
 - Erhalt Nachrichtenreihenfolge
+
+# Aufgabe 3
+## a
+
+**Wie sind die Daten organisiert**
+
+**Was muss beachtet werden wenn maximal 10 Consumer**
+
+**Partition mind. nötig?**
+
+**Wann eignet sich standalone customer**

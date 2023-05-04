@@ -17,3 +17,4 @@ data = 'diest ist ein test'
 prod.produce('vlvs_inf20_the_mighty_avengers',data.encode('utf-8'))
 # Call flush() to make sure any remaining messages are delivered before closing the producer
 prod.flush()
+
