@@ -126,8 +126,21 @@ gleichzeitig eine Partition schicken und diese beim Consumer alle auf einmal ank
 
 **Wie sind die Daten organisiert**
 
+`{"pE5":<Price PE5>,"pE10":<Price PE10>,"dat":"<date>","stat":"<Station ID>","plz":"<PLZ>","pDie":<Price Diesel>}`
+
 **Was muss beachtet werden wenn maximal 10 Consumer**
+- Es ist empfehlenswert so viele Partitionen zu haben wie Consumer gibt
+- eine Partition kann ausreichen aber es gibt Redundanzen  und Performacne probleme
 
 **Partition mind. nötig?**
+- Mindestens genauso viel wie Consumer, wenn nicht mehr, dies beschleunigt das lesen und Performance
+- Empfehelendwert 4 Partitionen und 3 Consumer Groups und max 4 Consumers je gruppe
+- ohne Consumer groups sollten es mind. so viele wie es Consumer gibt#
 
-**Wann eignet sich standalone customer**
+**Was tun damit Events mehrfach empfangen werden:**
+- nutzen eines einmal schreiben pro Partition und bei Netzwerkfehlern schauen ob die letzte Nachricht gesendet wurde
+- ein Primary key nutzen und schauen ob die Message ein Duplikat ist
+- enable.auto.commit auf true setzen wodurch die Rückmeldung der Consumer ignoriert werden
+
+**Standalone Consumer wann nutzen**
+- nutzen wenn Daten von einer oder mehreren spezifischen Partition --> nicht nach topic sondern direkt Pattition
