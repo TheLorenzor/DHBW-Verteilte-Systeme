@@ -27,6 +27,4 @@ while True:
         continue
     # listen for data
     print(msg.value().decode('utf-8'))
-    # Commit the offsets of the processed messages
-    consumer.commit()
 consumer.close()
