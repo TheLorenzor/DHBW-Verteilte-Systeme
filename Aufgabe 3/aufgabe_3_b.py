@@ -16,7 +16,6 @@ consumer = Consumer({
     'bootstrap.servers': bootstrap_servers,
     'group.id': group_id,
     'auto.offset.reset': 'earliest',
-    'enable.auto.commit': False
 })
 metadata = consumer.list_topics(topic=topic_name)
 num_partitions = len(metadata.topics[topic_name].partitions)
@@ -28,16 +27,15 @@ aggregated_data = {}
 
 # Define a function to consume messages from a single partition
 def consume_partition(partitionIndex):
-    consumer = Consumer({
+    consumers = Consumer({
         'bootstrap.servers': bootstrap_servers,
         'group.id': group_id,
         'auto.offset.reset': 'earliest',
-        'enable.auto.commit': False
     })
-    partition = TopicPartition(topic_name, partitionIndex)
-    consumer.assign([partition])
+    partitions = TopicPartition(topic_name, partitionIndex)
+    consumers.assign([partitions])
     while True:
-        message = consumer.poll(timeout=1.0)
+        message = consumers.poll(timeout=1.0)
         if message is None:
             print("is none")
             continue
@@ -55,7 +53,7 @@ def consume_partition(partitionIndex):
             timestamp = timestamp.replace(minute=0, second=0, microsecond=0)
             # Create a dictionary key for the PLZ and hour
             key = f"{partitionIndex}"
-
+            print(1)
             if key not in aggregated_data:
                 aggregated_data[key] = {'timestamp': 0, 'pE5': 0.0, 'pE10': 0.0, 'pDie': 0.0, 'count': 0}
             if key in aggregated_data:
@@ -63,14 +61,14 @@ def consume_partition(partitionIndex):
                     # send to graphite
                     print("send")
                     graphyte.send('INF20.group_ttm.tankerkoenig' + key + '.e5_price',
-                                  aggregated_data[key]['timestamp'], float(aggregated_data[key]['pE5']))
+                                  float(aggregated_data[key]['pE5']))
                     graphyte.send('INF20.group_ttm.tankerkoenig' + key + '.e10_price',
-                                  aggregated_data[key]['timestamp'], float(aggregated_data[key]['pE10']))
+                                  float(aggregated_data[key]['pE10']))
                     graphyte.send('INF20.group_ttm.tankerkoenig' + key + '.pDie_price',
-                                  aggregated_data[key]['timestamp'], float(aggregated_data[key]['pDie']))
+                                  float(aggregated_data[key]['pDie']))
                     # reset values
                     aggregated_data[key] = {'timestamp': 0, 'pE5': 0.0, 'pE10': 0.0, 'pDie': 0.0, 'count': 0}
-
+            print(2)
             # Add the message's pE5 and pE10 values to the aggregated data
 
             aggregated_data[key]['timestamp'] = timestamp
@@ -84,7 +82,7 @@ def consume_partition(partitionIndex):
             if message_data['pDie'] is not None:
                 aggregated_data[key]['pDie'] = (aggregated_data[key]['pDie'] * (aggregated_data[key]['count'] - 1) +
                                                 message_data['pDie']) / aggregated_data[key]['count']
-
+            print(3)
             # Output the current aggregated data for the PLZ and hour
             #print(f"{key}: {aggregated_data[key]}from partition: {message.partition()}")
     consumer.close()
@@ -93,3 +91,10 @@ def consume_partition(partitionIndex):
 with ThreadPoolExecutor(max_workers=num_partitions) as executor:
     for partition in range(num_partitions):
         executor.submit(consume_partition, partition)
+
+def convertTime(dt):
+    timestamp_s = dt.timestamp() // 1000
+    # format timestamp as string in Graphite format
+    result = datetime.datetime.utcfromtimestamp(timestamp_s).strftime('%Y-%m-%d %H:%M:%S')
+    return result
+
