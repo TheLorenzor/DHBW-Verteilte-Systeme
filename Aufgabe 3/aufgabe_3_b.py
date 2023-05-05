@@ -39,11 +39,13 @@ def consume_partition(partitionIndex):
     while True:
         message = consumer.poll(timeout=1.0)
         if message is None:
+            print("is none")
             continue
 
         if message.error():
             print(f"Error while consuming message: {message.error()}")
         else:
+            print("no error")
             # Parse the message as a JSON object
             message_data = json.loads(message.value().decode('utf-8'))
             # Extract the PLZ and timestamp from the message
@@ -56,10 +58,10 @@ def consume_partition(partitionIndex):
 
             if key not in aggregated_data:
                 aggregated_data[key] = {'timestamp': 0, 'pE5': 0.0, 'pE10': 0.0, 'pDie': 0.0, 'count': 0}
-
             if key in aggregated_data:
                 if aggregated_data[key]['timestamp'] != timestamp and aggregated_data[key]['timestamp'] != 0:
                     # send to graphite
+                    print("send")
                     graphyte.send('INF20.group_ttm.tankerkoenig' + key + '.e5_price',
                                   aggregated_data[key]['timestamp'], float(aggregated_data[key]['pE5']))
                     graphyte.send('INF20.group_ttm.tankerkoenig' + key + '.e10_price',
@@ -84,10 +86,8 @@ def consume_partition(partitionIndex):
                                                 message_data['pDie']) / aggregated_data[key]['count']
 
             # Output the current aggregated data for the PLZ and hour
-            print(f"{key}: {aggregated_data[key]}from partition: {message.partition()}")
-        # Commit the offset of the processed message
-        consumer.commit(message)
-
+            #print(f"{key}: {aggregated_data[key]}from partition: {message.partition()}")
+    consumer.close()
 
 # Use a thread pool to consume messages from all partitions in parallel
 with ThreadPoolExecutor(max_workers=num_partitions) as executor:
