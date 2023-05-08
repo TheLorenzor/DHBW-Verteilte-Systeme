@@ -121,6 +121,9 @@ gleichzeitig eine Partition schicken und diese beim Consumer alle auf einmal ank
 - Keys are used to determine the partition within a log to which a message get's appended to. While the value is the actual payload of the message
 - Erhalt Nachrichtenreihenfolge
 
+## d
+- In Graphyte Datenbank unter folgendem Ordner zu finden: `INF20.group_ttm.<location>.temperature `
+- In Graphine folgendes Panel: `Mirko,TIm,Tilmann`
 # Aufgabe 3
 ## a
 

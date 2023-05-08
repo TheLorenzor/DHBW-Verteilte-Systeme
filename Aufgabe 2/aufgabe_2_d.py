@@ -1,4 +1,5 @@
 import json
+import socket
 from datetime import datetime
 from confluent_kafka import Consumer
 import graphyte
@@ -18,7 +19,7 @@ config = {
 cons = Consumer(config)
 graphyte.init('10.50.15.52', prefix='system.sync')
 cons.subscribe(['weather'])
-
+timestamp_ctr = [0,0,0]
 # listen and continuously format the temperatur-data and send it to graphite
 while True:
     msg = cons.poll(1.0)
@@ -31,8 +32,22 @@ while True:
     temperatur = data['tempCurrent']
     timestamp = datetime.strptime(data['timeStamp'], '%Y-%m-%dT%H:%M:%S.%f%z').timestamp() * 1000
     # send data to graphite
-    print(temperatur)
-    graphyte.send('INF20.group_ttm.' + location + '.temperature', float(temperatur))
+    print(timestamp)
+    if location == 'Mosbach' and timestamp != timestamp_ctr[0]:
+        timestamp_ctr[0] = timestamp
+    elif location == 'Stuttgart' and timestamp != timestamp_ctr[1]:
+        timestamp_ctr[1] = timestamp
+    elif location == 'Bad_Mergentheim' and timestamp != timestamp_ctr[2]:
+        timestamp_ctr[2] = timestamp
+    else:
+        continue
+    print(timestamp)
+    sock = socket.create_connection(('10.50.15.52', 2003), timeout=1)
+    try:
+        message = f'INF20.group_ttm.{location}.temperature {float(temperatur)} {timestamp}'
+        sock.send(bytearray(message,encoding='utf-8'))
+    finally:
+        sock.close()
 
 # close connection
 cons.close()
