@@ -32,7 +32,6 @@ while True:
     temperatur = data['tempCurrent']
     timestamp = datetime.strptime(data['timeStamp'], '%Y-%m-%dT%H:%M:%S.%f%z').timestamp() * 1000
     # send data to graphite
-    print(timestamp)
     if location == 'Mosbach' and timestamp != timestamp_ctr[0]:
         timestamp_ctr[0] = timestamp
     elif location == 'Stuttgart' and timestamp != timestamp_ctr[1]:
@@ -41,7 +40,6 @@ while True:
         timestamp_ctr[2] = timestamp
     else:
         continue
-    print(timestamp)
     sock = socket.create_connection(('10.50.15.52', 2003), timeout=1)
     try:
         message = f'INF20.group_ttm.{location}.temperature {float(temperatur)} {timestamp}'
