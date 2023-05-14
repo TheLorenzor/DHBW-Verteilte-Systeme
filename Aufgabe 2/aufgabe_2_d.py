@@ -30,7 +30,7 @@ while True:
     data = json.loads(msg.value().decode('utf-8'))
     location = data['city'].replace(' ', '_')
     temperatur = data['tempCurrent']
-    timestamp = datetime.strptime(data['timeStamp'], '%Y-%m-%dT%H:%M:%S.%f%z').timestamp() * 1000
+    timestamp = datetime.strptime(data['timeStamp'], '%Y-%m-%dT%H:%M:%S.%f%z').timestamp()
     # send data to graphite
     if location == 'Mosbach' and timestamp != timestamp_ctr[0]:
         timestamp_ctr[0] = timestamp
@@ -42,7 +42,7 @@ while True:
         continue
     sock = socket.create_connection(('10.50.15.52', 2003), timeout=1)
     try:
-        message = f'INF20.group_ttm.{location}.temperature {float(temperatur)} {timestamp}'
+        message = f'INF20.group_ttm.{location}.temperature {float(temperatur)} {timestamp}\n'
         sock.send(bytearray(message,encoding='utf-8'))
     finally:
         sock.close()
