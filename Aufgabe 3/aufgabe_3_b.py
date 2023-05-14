@@ -53,7 +53,6 @@ def consume_partition(partitionIndex):
             timestamp = timestamp.replace(minute=0, second=0, microsecond=0)
             # Create a dictionary key for the PLZ and hour
             key = f"{partitionIndex}"
-            print(1)
             if key not in aggregated_data:
                 aggregated_data[key] = {'timestamp': 0, 'pE5': 0.0, 'pE10': 0.0, 'pDie': 0.0, 'count': 0}
             if key in aggregated_data:
@@ -65,7 +64,6 @@ def consume_partition(partitionIndex):
                     sendMessage(sock,'pDie',aggregated_data[key]['pDie'],aggregated_data[key]['timestamp'])
                     # reset values
                     aggregated_data[key] = {'timestamp': 0, 'pE5': 0.0, 'pE10': 0.0, 'pDie': 0.0, 'count': 0}
-            print(2)
             # Add the message's pE5 and pE10 values to the aggregated data
 
             aggregated_data[key]['timestamp'] = timestamp
@@ -79,7 +77,7 @@ def consume_partition(partitionIndex):
             if message_data['pDie'] is not None:
                 aggregated_data[key]['pDie'] = (aggregated_data[key]['pDie'] * (aggregated_data[key]['count'] - 1) +
                                                 message_data['pDie']) / aggregated_data[key]['count']
-            print(3)
+
             # Output the current aggregated data for the PLZ and hour
             #print(f"{key}: {aggregated_data[key]}from partition: {message.partition()}")
         sock.close()
