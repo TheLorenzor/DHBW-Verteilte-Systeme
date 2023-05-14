@@ -8,20 +8,29 @@ import graphyte
 
 # Set up consumer properties
 bootstrap_servers = '10.50.15.52:9092'
+group_id = 'the_mighty_avengers'
 topic_name = 'tankerkoenig'
 
-# Get the number of partitions for the topic
-consumer = Consumer({
-    'bootstrap.servers': bootstrap_servers,
-    'group.id': 'the_mighty_avengers',
-    'auto.offset.reset': 'earliest',
-})
-metadata = consumer.list_topics(topic=topic_name)
-num_partitions = len(metadata.topics[topic_name].partitions)
 
+num_partitions = 10
+graphyte.init('10.50.15.52', prefix='system.sync')
 # Define a dictionary to store the aggregated data
 aggregated_data = {}
 
+
+def convertTime(dt):
+    print(dt)
+    timestamp_s = (int)(dt.timestamp() // 1000)
+    # format timestamp as string in Graphite format
+    return timestamp_s
+
+
+def sendMessage(sock,group, fuel, price, timestamp):
+
+    path = 'INF20.group_ttm.tankerkoenig.'+group+"."+fuel
+    message = f'{path} {price} {timestamp.timestamp()}\n'
+    print(message)
+    sock.send(bytearray(message, encoding='utf-8'))
 
 # Define a function to consume messages from a single partition
 def consume_partition(partitionIndex):
@@ -32,9 +41,8 @@ def consume_partition(partitionIndex):
     })
     partitions = TopicPartition(topic_name, partitionIndex)
     consumers.assign([partitions])
-    sock = socket.create_connection(('10.50.15.52', 2003), timeout=1)
     while True:
-        
+        sock = socket.create_connection(('10.50.15.52', 2003), timeout=1)
         message = consumers.poll(timeout=1.0)
         if message is None:
             print("is none")
@@ -59,9 +67,12 @@ def consume_partition(partitionIndex):
                 if aggregated_data[key]['timestamp'] != timestamp and aggregated_data[key]['timestamp'] != 0:
                     # send to graphite
                     print("send")
-                    sendMessage(sock,'pE5',aggregated_data[key]['pE5'],aggregated_data[key]['timestamp'])
-                    sendMessage(sock,'pE10',aggregated_data[key]['pE10'],aggregated_data[key]['timestamp'])
-                    sendMessage(sock,'pDie',aggregated_data[key]['pDie'],aggregated_data[key]['timestamp'])
+                    try:
+                        sendMessage(sock, key, 'pE5', aggregated_data[key]['pE5'], aggregated_data[key]['timestamp'])
+                        sendMessage(sock, key, 'pE10', aggregated_data[key]['pE10'], aggregated_data[key]['timestamp'])
+                        sendMessage(sock, key, 'pDie', aggregated_data[key]['pDie'], aggregated_data[key]['timestamp'])
+                    finally:
+                        sock.close()
                     # reset values
                     aggregated_data[key] = {'timestamp': 0, 'pE5': 0.0, 'pE10': 0.0, 'pDie': 0.0, 'count': 0}
             # Add the message's pE5 and pE10 values to the aggregated data
@@ -79,19 +90,11 @@ def consume_partition(partitionIndex):
                                                 message_data['pDie']) / aggregated_data[key]['count']
 
             # Output the current aggregated data for the PLZ and hour
-            #print(f"{key}: {aggregated_data[key]}from partition: {message.partition()}")
-        sock.close()
+            # print(f"{key}: {aggregated_data[key]}from partition: {message.partition()}")
+    sock.close()
+
+
 # Use a thread pool to consume messages from all partitions in parallel
 with ThreadPoolExecutor(max_workers=num_partitions) as executor:
     for partition in range(num_partitions):
         executor.submit(consume_partition, partition)
-
-def convertTime(dt):
-    timestamp_s = dt.timestamp() // 1000
-    # format timestamp as string in Graphite format
-    result = datetime.datetime.utcfromtimestamp(timestamp_s).strftime('%Y-%m-%d %H:%M:%S')
-    return result
-
-def sendMessage(sock,fuel,price,timestamp):
-        message = f'INF20.group_ttm.tankerkoenig.{fuel}.{float(price)} {timestamp}\n'
-        sock.send(bytearray(message,encoding='utf-8'))
