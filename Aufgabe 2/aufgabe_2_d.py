@@ -42,6 +42,7 @@ while True:
         continue
     sock = socket.create_connection(('10.50.15.52', 2003), timeout=1)
     try:
+        print(temperatur)
         message = f'INF20.group_ttm.{location}.temperature {float(temperatur)} {timestamp}\n'
         sock.send(bytearray(message,encoding='utf-8'))
     finally:
